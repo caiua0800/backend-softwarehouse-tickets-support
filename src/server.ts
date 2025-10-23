@@ -33,23 +33,7 @@ setupSocket(io); // 6. Chame a função que vai configurar a lógica do socket
 
 const PORT = process.env.PORT || 3333;
 
-const whitelist = [
-  'http://localhost:5173', 
-];
-
-const corsOptions: CorsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Permite requisições sem 'origin' (como apps mobile, Postman, ou o nosso Electron em produção)
-    if (!origin || whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Acesso negado pelo CORS'));
-    }
-  },
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+app.use(cors()); 
 
 app.use(express.json());
 
