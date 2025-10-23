@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  createdAt     DateTime  @default(now())
+  refreshTokens RefreshToken[]
+  tickets       Ticket[]
+  messages      Message[] // <-- Relação com as mensagens
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  hashedToken String
+  userId    String
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model ApiKey {
+  id           String   @id @default(cuid())
+  hashedKey    String   @unique
+  platformName String
+  createdAt    DateTime @default(now())
+}
+
+model Ticket {
+  id            Int       @id @default(autoincrement())
+  platformName  String
+  requesterName String
+  title         String
+  category      Category
+  description   String
+  status        Status    @default(PENDENTE)
+  contact       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id])
+  messages      Message[]
+}
+
+// O NOVO MODELO DE MENSAGEM ESTÁ FALTANDO NO SEU CÓDIGO!
+// VOU ADICIONÁ-LO AQUI:
+model Message {
+  id        String   @id @default(cuid())
+  text      String   @db.Text
+  createdAt DateTime @default(now())
+
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Category {
+  ATUALIZACAO
+  BUG
+  URGENTE
+  DUVIDA
+  OUTRO
+}
+
+enum Status {
+  PENDENTE
+  EM_ANDAMENTO
+  EM_TESTES
+  ENTREGUE
+  RECUSADO
+  CANCELADO
+}
