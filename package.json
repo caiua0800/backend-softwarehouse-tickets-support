@@ -7,7 +7,8 @@
   "generate-key": "ts-node scripts/generate-api-key.ts",
   "promote-user": "ts-node scripts/promote-user.ts",
   "prisma:migrate": "dotenv -e .env -- npx prisma migrate dev",
-  "prisma:generate": "dotenv -e .env -- npx prisma generate"
+  "prisma:generate": "dotenv -e .env -- npx prisma generate",
+  "build": "tsc"
 },
   "keywords": [],
   "author": "",
