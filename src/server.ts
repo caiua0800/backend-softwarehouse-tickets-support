@@ -6,7 +6,7 @@ import cors, { CorsOptions } from 'cors';
 import http from "http"; // 1. Importe o módulo http
 import { Server } from "socket.io"; // 2. Importe o Server do socket.io
 import { setupSocket } from "./lib/socket"; // 3. Importe nosso futuro setup de socket
-
+import path from 'path';
 import authRoutes from "./routes/auth.routes";
 import ticketRoutes from "./routes/ticket.routes";
 
@@ -43,6 +43,11 @@ app.use("/tickets", ticketRoutes);
 app.get("/", (req, res) => {
   res.send("API Nobel OS está no ar! 🚀");
 });
+
+app.get('/api-test', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/api-test.html'));
+});
+
 
 // 7. Use o 'server' para ouvir, não mais o 'app'
 server.listen(PORT, () => {

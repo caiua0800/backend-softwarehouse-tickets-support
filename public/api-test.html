@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nobel OS - API Test Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .endpoint-card { transition: all 0.2s ease-in-out; }
+        details[open] summary { margin-bottom: 1rem; }
+    </style>
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body class="bg-slate-900 text-slate-300">
+
+    <div class="container mx-auto p-8 max-w-5xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-2">Nobel OS - API Test</h1>
+            <p class="text-slate-400">Página de documentação e teste para a API.</p>
+        </header>
+
+        <section class="mb-10 p-6 bg-slate-800 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-white mb-4">Autenticação Global</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="apiKey" class="font-medium text-white block mb-2">API Key (<code class="text-yellow-300">x-api-key</code>)</label>
+                    <input type="text" id="apiKey" placeholder="Cole sua chave de API aqui..." class="w-full bg-slate-700 text-white p-2 rounded-md border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label for="authToken" class="font-medium text-white block mb-2">Auth Token (<code class="text-yellow-300">Bearer Token</code>)</label>
+                    <input type="text" id="authToken" placeholder="Cole seu Access Token aqui..." class="w-full bg-slate-700 text-white p-2 rounded-md border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-4">As chaves inseridas aqui serão usadas automaticamente nos cabeçalhos das requisições abaixo.</p>
+        </section>
+
+        <main>
+            <h2 class="text-3xl font-bold text-white mb-6">Endpoints</h2>
+
+            <!-- Seção de Autenticação -->
+            <details class="mb-6">
+                <summary class="cursor-pointer text-2xl font-semibold text-white">/auth</summary>
+                
+                <!-- POST /auth/login -->
+                <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="POST" data-path="/auth/login" data-auth="none">
+                    <div class="p-6">
+                        <div class="flex items-center mb-2"><span class="tag-post">POST</span><code class="path">/auth/login</code></div>
+                        <p class="desc">Realiza o login de um usuário e retorna tokens.</p>
+                        <div class="tester">
+                            <h4 class="font-semibold text-white mb-2 mt-4">Corpo (JSON)</h4>
+                            <textarea class="payload w-full h-32"></textarea>
+                            <div class="controls"><button class="btn-test">Testar</button></div>
+                            <h4 class="font-semibold text-white mb-2 mt-4">Resposta</h4>
+                            <pre class="response"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- POST /auth/register -->
+                <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="POST" data-path="/auth/register" data-auth="bearer">
+                    <div class="p-6">
+                        <div class="flex items-center mb-2"><span class="tag-post">POST</span><code class="path">/auth/register</code></div>
+                        <p class="desc">Registra um novo usuário. Requer autenticação de um usuário já logado.</p>
+                        <div class="tester">
+                            <h4 class="font-semibold text-white mb-2 mt-4">Corpo (JSON)</h4>
+                            <textarea class="payload w-full h-32"></textarea>
+                            <div class="controls"><button class="btn-test">Testar</button></div>
+                            <h4 class="font-semibold text-white mb-2 mt-4">Resposta</h4>
+                            <pre class="response"></pre>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Seção de Tickets -->
+            <details class="mb-6" open>
+                <summary class="cursor-pointer text-2xl font-semibold text-white">/tickets</summary>
+
+                <!-- POST /tickets/public -->
+                <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="POST" data-path="/tickets/public" data-auth="apikey">
+                    <div class="p-6">
+                        <div class="flex items-center mb-2"><span class="tag-post">POST</span><code class="path">/tickets/public</code></div>
+                        <p class="desc">Cria um novo ticket. Requer autenticação via API Key.</p>
+                        <div class="tester">
+                            <h4 class="font-semibold text-white mb-2 mt-4">Corpo (JSON)</h4>
+                            <textarea class="payload w-full h-64"></textarea>
+                            <div class="controls"><button class="btn-test">Testar</button></div>
+                            <h4 class="font-semibold text-white mb-2 mt-4">Resposta</h4>
+                            <pre class="response"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GET /tickets -->
+                <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="GET" data-path="/tickets" data-auth="bearer">
+                    <div class="p-6">
+                        <div class="flex items-center mb-2"><span class="tag-get">GET</span><code class="path">/tickets</code></div>
+                        <p class="desc">Lista todos os tickets. Requer autenticação via Bearer Token.</p>
+                        <div class="tester">
+                            <div class="controls"><button class="btn-test">Testar</button></div>
+                            <h4 class="font-semibold text-white mb-2 mt-4">Resposta</h4>
+                            <pre class="response"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GET /tickets/:id -->
+                <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="GET" data-path="/tickets/:id" data-auth="bearer">
+                    <div class="p-6">
+                        <div class="flex items-center mb-2"><span class="tag-get">GET</span><code class="path">/tickets/<input type="text" class="param-input" placeholder=":id"></code></div>
+                        <p class="desc">Busca um ticket específico pelo ID. Requer autenticação via Bearer Token.</p>
+                        <div class="tester">
+                            <div class="controls"><button class="btn-test">Testar</button></div>
+                            <h4 class="font-semibold text-white mb-2 mt-4">Resposta</h4>
+                            <pre class="response"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- POST /tickets/:id/messages -->
+                 <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="POST" data-path="/tickets/:id/messages" data-auth="bearer">
+                    <div class="p-6">
+                        <div class="flex items-center mb-2"><span class="tag-post">POST</span><code class="path">/tickets/<input type="text" class="param-input" placeholder=":id">/messages</code></div>
+                        <p class="desc">Adiciona uma nova mensagem a um ticket. Requer autenticação via Bearer Token.</p>
+                        <div class="tester">
+                            <h4 class="font-semibold text-white mb-2 mt-4">Corpo (JSON)</h4>
+                            <textarea class="payload w-full h-20"></textarea>
+                            <div class="controls"><button class="btn-test">Testar</button></div>
+                            <h4 class="font-semibold text-white mb-2 mt-4">Resposta</h4>
+                            <pre class="response"></pre>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+        </main>
+    </div>
+
+    <script>
+        // Estilos Padrão para os elementos
+        const commonStyles = {
+            tag: "text-lg font-bold text-white px-3 py-1 rounded-md mr-4",
+            path: "text-xl font-mono text-white",
+            desc: "text-slate-400 mb-4",
+            tester: "mt-6 border-t border-slate-700 pt-4",
+            payload: "w-full font-mono text-sm bg-slate-900 border border-slate-600 rounded-md p-4 focus:ring-2 focus:ring-blue-500 focus:outline-none",
+            controls: "flex items-center justify-end mt-4",
+            btnTest: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition-colors",
+            response: "w-full bg-slate-900 border border-slate-600 rounded-md p-4 overflow-x-auto min-h-[100px] text-sm mt-2",
+            paramInput: "inline-block w-24 bg-slate-700 text-center text-yellow-300 font-mono rounded mx-1"
+        };
+        Object.keys(commonStyles).forEach(key => {
+            document.querySelectorAll(`.${key}`).forEach(el => el.className = `${el.className} ${commonStyles[key]}`);
+        });
+        document.querySelectorAll('.tag-post').forEach(el => el.classList.add('bg-green-600'));
+        document.querySelectorAll('.tag-get').forEach(el => el.classList.add('bg-blue-600'));
+        
+        const apiKeyInput = document.getElementById('apiKey');
+        const authTokenInput = document.getElementById('authToken');
+
+        const examplePayloads = {
+            '/auth/login': { email: 'caiua@nobel.com', password: 'senhaforte123' },
+            '/auth/register': { email: 'novo-usuario@email.com', password: 'outrasenha123' },
+            '/tickets/public': {
+                "platformName": "E-commerce XPTO", "requesterName": "API de Pagamentos",
+                "title": "Falha na autorização de cartão de crédito", "category": "BUG",
+                "description": "O gateway está retornando erro 503 para transações com Visa.", "contact": "dev-team@pagamentos.com"
+            },
+            '/tickets/:id/messages': { text: 'Esta é uma nova mensagem de teste.' }
+        };
+
+        document.querySelectorAll('.endpoint-card').forEach(card => {
+            const method = card.dataset.method;
+            const path = card.dataset.path;
+            const auth = card.dataset.auth;
+            const testButton = card.querySelector('.btn-test');
+            const responsePre = card.querySelector('.response');
+            const payloadTextarea = card.querySelector('.payload');
+            
+            if (payloadTextarea && examplePayloads[path]) {
+                payloadTextarea.value = JSON.stringify(examplePayloads[path], null, 2);
+            }
+
+            testButton.addEventListener('click', async () => {
+                const headers = { 'Content-Type': 'application/json' };
+                let finalPath = path;
+
+                if (auth === 'apikey') {
+                    const apiKey = apiKeyInput.value.trim();
+                    if (!apiKey) {
+                        showResponse(responsePre, 'Erro: Chave de API é obrigatória.', 401);
+                        return;
+                    }
+                    headers['x-api-key'] = apiKey;
+                } else if (auth === 'bearer') {
+                    const authToken = authTokenInput.value.trim();
+                    if (!authToken) {
+                        showResponse(responsePre, 'Erro: Bearer Token de autenticação é obrigatório.', 401);
+                        return;
+                    }
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+
+                card.querySelectorAll('.param-input').forEach(input => {
+                    finalPath = finalPath.replace(`:${input.placeholder.slice(1)}`, input.value);
+                });
+
+                let body = null;
+                if (payloadTextarea) {
+                    try { body = JSON.parse(payloadTextarea.value); } 
+                    catch (e) { showResponse(responsePre, `Erro no JSON: ${e.message}`, 400); return; }
+                }
+
+                testButton.disabled = true;
+                testButton.textContent = 'Testando...';
+
+                try {
+                    const response = await fetch(finalPath, {
+                        method,
+                        headers,
+                        body: body ? JSON.stringify(body) : null
+                    });
+                    const data = await response.json();
+                    showResponse(responsePre, data, response.status);
+                } catch (error) {
+                    showResponse(responsePre, `Erro de Rede: ${error.message}`, 500);
+                } finally {
+                    testButton.disabled = false;
+                    testButton.textContent = 'Testar Rota';
+                }
+            });
+        });
+
+        function showResponse(element, data, status) {
+            const isError = status >= 400;
+            element.textContent = `Status: ${status}\n\n${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}`;
+            element.className = commonStyles.response; // Reset
+            element.classList.add(isError ? 'bg-red-900' : 'bg-green-900', isError ? 'border-red-700' : 'border-green-700', 'text-white');
+        }
+    </script>
+</body>
+</html>
