@@ -12,5 +12,10 @@ router.post("/public", authenticateApiKey, ticketController.createWithApiKey);
 router.post("/", authenticateToken, ticketController.create);
 router.get("/:id", authenticateToken, ticketController.getById);
 router.post('/:id/messages', authenticateToken, ticketController.addMessage);
+router.get(
+  "/platform/:platformName",
+  authenticateApiKey,
+  ticketController.getByPlatform
+);
 
 export default router;

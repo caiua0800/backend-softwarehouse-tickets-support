@@ -92,6 +92,42 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- <!-- <!-- <!-- NOVO ENDPOINT ADICIONADO AQUI --> --> --> -->
+                <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="GET" data-path="/tickets/platform/:platformName" data-auth="apikey">
+                    <div class="p-6">
+                        <div class="flex items-center mb-2">
+                            <span class="tag-get">GET</span>
+                            <code class="path">/tickets/platform/<input type="text" class="param-input" placeholder=":platformName"></code>
+                        </div>
+                        <p class="desc">Busca tickets de uma plataforma com paginação e filtros. Requer API Key.</p>
+                        <div class="tester">
+                            <h4 class="font-semibold text-white mb-2 mt-4">Parâmetros de Query (Opcional)</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                <div>
+                                    <label for="param-page" class="text-sm font-medium text-slate-400 block mb-1">Página</label>
+                                    <input type="number" id="param-page" placeholder="1" class="query-param-input w-full bg-slate-700 text-white p-2 rounded-md border border-slate-600 text-sm">
+                                </div>
+                                <div>
+                                    <label for="param-pageSize" class="text-sm font-medium text-slate-400 block mb-1">Itens/Página</label>
+                                    <input type="number" id="param-pageSize" placeholder="10" class="query-param-input w-full bg-slate-700 text-white p-2 rounded-md border border-slate-600 text-sm">
+                                </div>
+                                <div>
+                                    <label for="param-status" class="text-sm font-medium text-slate-400 block mb-1">Status</label>
+                                    <input type="text" id="param-status" placeholder="ABERTO" class="query-param-input w-full bg-slate-700 text-white p-2 rounded-md border border-slate-600 text-sm">
+                                </div>
+                                <div>
+                                    <label for="param-searchTerm" class="text-sm font-medium text-slate-400 block mb-1">Termo de Busca</label>
+                                    <input type="text" id="param-searchTerm" placeholder="erro login" class="query-param-input w-full bg-slate-700 text-white p-2 rounded-md border border-slate-600 text-sm">
+                                </div>
+                            </div>
+                            <div class="controls"><button class="btn-test">Testar</button></div>
+                            <h4 class="font-semibold text-white mb-2 mt-4">Resposta</h4>
+                            <pre class="response"></pre>
+                        </div>
+                    </div>
+                </div>
+                <!-- <!-- <!-- <!-- FIM DO NOVO ENDPOINT --> --> --> -->
 
                 <!-- GET /tickets -->
                 <div class="endpoint-card bg-slate-800 rounded-lg shadow-lg mb-4" data-method="GET" data-path="/tickets" data-auth="bearer">
@@ -203,9 +239,32 @@
                     headers['Authorization'] = `Bearer ${authToken}`;
                 }
 
+                // Substitui os parâmetros na URL (Ex: /tickets/:id)
                 card.querySelectorAll('.param-input').forEach(input => {
-                    finalPath = finalPath.replace(`:${input.placeholder.slice(1)}`, input.value);
+                    const paramName = `:${input.placeholder.slice(1)}`;
+                    if (!input.value && path.includes(paramName)) {
+                        showResponse(responsePre, `Erro: Parâmetro '${paramName}' é obrigatório.`, 400);
+                        throw new Error("Missing required path parameter");
+                    }
+                    finalPath = finalPath.replace(paramName, input.value);
                 });
+
+                // // NOVO: Constrói a query string a partir dos inputs de filtro
+                const queryParams = new URLSearchParams();
+                card.querySelectorAll('.query-param-input').forEach(input => {
+                    const value = input.value.trim();
+                    if (value) {
+                        // Extrai o nome do parâmetro do ID do input (ex: 'param-page' -> 'page')
+                        const key = input.id.replace('param-', '');
+                        queryParams.append(key, value);
+                    }
+                });
+
+                const queryString = queryParams.toString();
+                if (queryString) {
+                    finalPath += `?${queryString}`;
+                }
+                // // FIM DO NOVO CÓDIGO
 
                 let body = null;
                 if (payloadTextarea) {
@@ -222,13 +281,20 @@
                         headers,
                         body: body ? JSON.stringify(body) : null
                     });
-                    const data = await response.json();
-                    showResponse(responsePre, data, response.status);
+                    const responseText = await response.text();
+                    try {
+                        const data = JSON.parse(responseText);
+                        showResponse(responsePre, data, response.status);
+                    } catch (e) {
+                         showResponse(responsePre, responseText, response.status);
+                    }
                 } catch (error) {
-                    showResponse(responsePre, `Erro de Rede: ${error.message}`, 500);
+                    if (error.message !== "Missing required path parameter") {
+                       showResponse(responsePre, `Erro de Rede: ${error.message}`, 500);
+                    }
                 } finally {
                     testButton.disabled = false;
-                    testButton.textContent = 'Testar Rota';
+                    testButton.textContent = 'Testar';
                 }
             });
         });
