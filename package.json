@@ -2,14 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-"scripts": {
-  "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-  "generate-key": "ts-node scripts/generate-api-key.ts",
-  "promote-user": "ts-node scripts/promote-user.ts",
-  "prisma:migrate": "dotenv -e .env -- npx prisma migrate dev",
-  "prisma:generate": "dotenv -e .env -- npx prisma generate",
-  "build": "tsc"
-},
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "generate-key": "ts-node scripts/generate-api-key.ts",
+    "promote-user": "ts-node scripts/promote-user.ts",
+    "prisma:migrate": "dotenv -e .env -- npx prisma migrate dev",
+    "prisma:generate": "dotenv -e .env -- npx prisma generate",
+    "build": "tsc"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

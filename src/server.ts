@@ -48,7 +48,6 @@ app.get('/api-test', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/api-test.html'));
 });
 
-
 // 7. Use o 'server' para ouvir, não mais o 'app'
 server.listen(PORT, () => {
   console.log(`🚀 Servidor e Socket.IO rodando na porta ${PORT}`);

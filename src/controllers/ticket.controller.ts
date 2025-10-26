@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { z } from "zod";
 // 👇 CORREÇÃO 1: Importe o enum `Status` gerado pelo Prisma
 import { Prisma, Status } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 const createTicketSchema = z.object({
   platformName: z.string().min(1),
@@ -24,6 +25,16 @@ const getByPlatformSchema = z.object({
     status: z.nativeEnum(Status).optional(),
     searchTerm: z.string().optional(),
   }),
+});
+
+const addMessageSchema = z.object({
+  text: z.string().min(1, { message: "O texto da mensagem é obrigatório." }),
+  sender: z
+    .object({
+      // Usamos 'externalId' para um ID do seu sistema, mas o email é o identificador único no nosso.
+      email: z.string().email({ message: "O email do remetente é inválido." }),
+    })
+    .optional(),
 });
 
 export const ticketController = {
@@ -163,22 +174,46 @@ export const ticketController = {
   },
 
   addMessage: async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { text } = req.body;
-    const userId = req.user?.userId;
-
-    if (!text || !userId) {
-      return res.status(400).json({
-        message: "Texto da mensagem e autenticação são obrigatórios.",
-      });
-    }
-
     try {
+      const { id } = req.params;
+      const { text, sender } = addMessageSchema.parse(req.body);
+
+      let userId: string;
+
+      // CASO 1: A requisição veio de um usuário logado (com JWT)
+      if (req.user?.userId) {
+        userId = req.user.userId;
+      }
+      // CASO 2: A requisição veio com API Key e dados do remetente
+      else if (sender?.email) {
+        // Usamos 'upsert':
+        // - Tenta encontrar um usuário com este email.
+        // - Se encontrar, usa ele.
+        // - Se não encontrar, cria um novo usuário "convidado" sem senha.
+        const guestUser = await prisma.user.upsert({
+          where: { email: sender.email },
+          update: {}, // Não precisa atualizar nada se o usuário já existe
+          create: {
+            email: sender.email,
+            // A senha é opcional, então não precisamos fornecer
+          },
+        });
+        userId = guestUser.id;
+      }
+      // CASO 3: Faltam informações
+      else {
+        return res.status(400).json({
+          message:
+            "Autenticação ou informações do remetente (sender) são obrigatórias.",
+        });
+      }
+
+      // A partir daqui, o código é o mesmo, pois já temos um 'userId' válido
       const newMessage = await prisma.message.create({
         data: {
           text,
           ticketId: parseInt(id),
-          userId,
+          userId, // Este ID pode ser de um usuário real ou de um convidado
         },
         include: {
           user: {
@@ -188,10 +223,15 @@ export const ticketController = {
       });
       // @ts-ignore
       req.io?.to(id).emit("newMessage", newMessage);
-      res.status(201).json(newMessage);
+      return res.status(201).json(newMessage);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res
+          .status(400)
+          .json({ message: "Dados inválidos", issues: error.format() });
+      }
       console.error("Erro ao adicionar mensagem:", error);
-      res.status(500).json({ message: "Erro ao salvar a mensagem." });
+      return res.status(500).json({ message: "Erro ao salvar a mensagem." });
     }
   },
 
